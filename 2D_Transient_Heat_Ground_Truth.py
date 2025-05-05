@@ -99,7 +99,7 @@ for n in range(nt_steps):
         print(f"Time step {n + 1}, t = {t_curr:.4f}")
         File(f"{save_dir}/solution_{n + 1:03d}.pvd") << u
     
-    # Save solution (json)
+    # Evaluate at evaluation points & save in the container
     sol = []
     for (x, y) in mesh_coords:
         sol.append(u(Point(x, y)))
@@ -108,6 +108,7 @@ for n in range(nt_steps):
     # Assign new solution(u) into previous solution(u_n) for the next step
     u_n.assign(u)
 
+# Save solution (json)
 sol_json = "2D_Transient_Heat_eval_solutions.json"
 with open(sol_json, 'w') as f:
     json.dump(sol_list, f)
