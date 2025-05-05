@@ -170,7 +170,7 @@ for t in range(len(times)):
     plt.tight_layout()
 
     # Save figures
-    fig_dir = f'./fig/sol_contour/Grount_Truth'
+    fig_dir = f'./fig/sol_contour/Ground_Truth'
     if not os.path.exists(fig_dir):
         os.makedirs(fig_dir, exist_ok=True)
 
