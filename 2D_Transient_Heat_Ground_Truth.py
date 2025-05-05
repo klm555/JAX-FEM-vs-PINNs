@@ -1,3 +1,4 @@
+#%% Ground Truth Solution
 import os
 import json
 from dolfin import *
@@ -114,3 +115,65 @@ with open(sol_json, 'w') as f:
     json.dump(sol_list, f)
 
 print(f"Solution created: {sol_json}")
+
+
+#%% Ground Truth Solution (Contour Plot)
+import os
+import json
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Load evaluation points
+with open('2D_Transient_Heat_eval_points.json', 'r') as f:
+    data_points = json.load(f)
+
+# Evaluation coordinates & time
+mesh_coords = data_points["mesh_coord"]["0"] # list
+dt_coords = data_points["dt_coord"]["0"] # [[0.0], [0.1], ..., [1.0]]
+times = [dt_coord[0] for dt_coord in dt_coords]  # unpack to [0.0, 0.1, ...]
+
+
+# Load evaluation results (by FEM)
+with open('2D_Transient_Heat_eval_solutions.json', 'r') as f:
+    data_results = json.load(f)
+
+# Ground truth soution (100 x 100 cells)
+u_true = np.array(data_results) # shape: (n_times, n_points)
+
+# x, y coordinates
+mesh_coords = np.array(mesh_coords)
+X = mesh_coords[:, 0]
+Y = mesh_coords[:, 1]
+
+# Contour plot settings
+# For a consistent scale across all time steps
+u_min = u_true.min()
+u_max = u_true.max()
+# Create n levels between u_min & u_max:
+num_levels = 80
+levels = np.linspace(u_min, u_max, num_levels)
+
+for t in range(len(times)):
+
+    u_true_t = u_true[t, :]
+
+    fig = plt.figure(figsize=(6, 5))
+    sc1 = plt.tricontourf(
+        X, Y, u_true_t,
+        levels=levels,
+        cmap='viridis')
+    plt.title(f"Ground Truth Solution (Mesh Numbers=100, t_step={t})")
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.colorbar(sc1, shrink=0.7)
+
+    plt.tight_layout()
+
+    # Save figures
+    fig_dir = f'./fig/sol_contour/Grount_Truth'
+    if not os.path.exists(fig_dir):
+        os.makedirs(fig_dir, exist_ok=True)
+
+    filename = os.path.join(fig_dir, f'sol_{t:04d}.png')
+    plt.savefig(filename, dpi=300, bbox_inches='tight')
+    plt.close(fig)
