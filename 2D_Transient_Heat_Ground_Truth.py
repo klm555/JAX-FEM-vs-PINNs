@@ -17,7 +17,7 @@ nt_steps = len(times) - 1
 
 
 # Mesh
-ns = 200
+ns = 100
 mesh = UnitSquareMesh(ns, ns) # unit square [0,1] x [0,1]
 
 # B.Cs
